@@ -1,4 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE Rank2Types  #-}
 
 module Authentication where
 
