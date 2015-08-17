@@ -9,6 +9,8 @@ import           Web.Scotty     (ActionM)
 
 type RouteHandler = AppConfig -> ActionM ()
 
+type PostgresSession = forall m a. H.Session HP.Postgres m a
+                       -> m (Either (H.SessionError HP.Postgres) a)
+
 data AppConfig = AppConfig {
-    dbSession :: forall m a. H.Session HP.Postgres m a
-                 -> m (Either (H.SessionError HP.Postgres) a) }
+    pgsession :: PostgresSession }

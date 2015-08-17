@@ -4,8 +4,9 @@ module Main where
 
 import           App
 import           Auth
+import qualified Authentication                as A
 import           Control.Exception.Base        (bracket)
-import           Control.Monad.IO.Class        (liftIO)
+import           Control.Monad.IO.Class
 import           Data.Maybe                    (fromMaybe)
 import           Data.Time.Clock               (getCurrentTime)
 import qualified Handlers
@@ -14,6 +15,7 @@ import qualified Hasql.Postgres                as HP
 import           Layout                        (readCSS)
 import           Lucid
 import           Migrations
+import qualified Modules                       as M
 import           Network.Wai.Middleware.Static (CacheContainer, CachingStrategy (PublicStaticCaching),
                                                 hasPrefix, initCaching,
                                                 staticPolicy')
@@ -87,11 +89,14 @@ setupAPIRoutes cfg = do
   post "/expenditure" $ Handlers.createExpenditure cfg
   -- post "/expenditure/:id" $ Handlers.updateExpenditure cfg
   delete "/expenditure/:id" $ Handlers.deleteExpenditure cfg
+
   -- auth
-  post "/registration" Auth.register
-  post "/login" Auth.login
+  post "/register" $ Auth.register authModule
+  post "/login" $ Auth.login authModule
   get "/logout" $ do
     Auth.unauthorize
     redirect "/"
 
   get "/main" $ Handlers.main' cfg
+
+  where authModule = A.makeModule cfg

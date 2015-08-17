@@ -64,6 +64,11 @@ data User =
   , _usrEmail     :: Text
   } deriving (Show)
 
+data UserFields = UserFields {
+    _usrFEmail    :: Text
+  , _usrFPassword :: Text
+  } deriving (Show)
+
 instance ToJSON ExpenditureId where
   toJSON (ExpenditureId eid) = toJSON eid
 

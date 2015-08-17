@@ -2,9 +2,12 @@
 module Auth where
 
 import           Control.Monad.IO.Class    (liftIO)
+import           Crypto.Scrypt             (Pass (..), encryptPass',
+                                            getEncryptedPass, newSalt)
 import qualified Data.ByteString.Lazy      as BS
 import           Data.Monoid
 import           Data.Text
+import           Data.Text.Encoding        (decodeUtf8, encodeUtf8)
 import qualified Data.Text.Lazy            as TL
 import qualified Data.Text.Lazy.Encoding   as TL
 import           Data.Time.Calendar        (fromGregorian)
@@ -12,11 +15,14 @@ import           Data.Time.Clock           (NominalDiffTime, UTCTime (..),
                                             addUTCTime, diffUTCTime,
                                             getCurrentTime, secondsToDiffTime,
                                             secondsToDiffTime)
+import           Debug.Trace
+import           Models
+import qualified Modules                   as M
 import           Network.HTTP.Types.Status
 import           Web.Cookie                (parseCookiesText)
 import           Web.JWT
 import           Web.Scotty                (ActionM, param, redirect, setHeader,
-                                            status)
+                                            status, text)
 
 epoch :: UTCTime
 epoch = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
@@ -24,18 +30,29 @@ epoch = UTCTime (fromGregorian 1970 1 1) (secondsToDiffTime 0)
 sessionDuration :: NominalDiffTime
 sessionDuration = fromInteger $ 60 * 60 * 60
 
-register :: ActionM ()
-register = do
+register :: M.AuthModule -> ActionM ()
+register am = do
+  email <- param "email" :: ActionM Text
+  pw    <- param "pass" :: ActionM Text
+  salt  <- liftIO newSalt
+  let salted = encryptPass' salt (Pass $ encodeUtf8 pw)
+  let userfields = UserFields email pw
+  result <- liftIO $ M.registerUser am userfields
   status created201
+  text $ traceShowId $ TL.decodeUtf8 $ BS.fromStrict $ getEncryptedPass salted
   return ()
 
-login :: ActionM ()
-login = do
-  email <- param "email"::ActionM Text
-  pw    <- param "pass"::ActionM Text
-  if pw == "passw0rd"
-    then authorize email
-    else status unauthorized401
+login :: M.AuthModule -> ActionM ()
+login am = do
+  email <- param "email" :: ActionM Text
+  pw    <- param "pass" :: ActionM Text
+  r <- liftIO $ M.loginUser am $ UserFields email pw
+  case r of
+    Just _ -> authorize email
+    Nothing -> status unauthorized401
+  -- if pw == "passw0rd"
+  --   then authorize email
+  --   else status unauthorized401
   return ()
 
 key :: Secret

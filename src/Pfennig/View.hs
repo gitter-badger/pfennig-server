@@ -64,7 +64,7 @@ login =
 register :: Html ()
 register =
   div_ [class_ "center"] $
-    form_ [class_ "registration", method_ "post", action_ "/registration"] $ do
+    form_ [class_ "registration", method_ "post", action_ "/register"] $ do
       div_ [class_ "row"] $ do
         label_ [for_ "email"] "E-Mail"
         input_ [id_ "email", name_ "email", type_ "text"]
