@@ -7,7 +7,7 @@ import           Crypto.Scrypt             (Pass (..), encryptPass',
 import qualified Data.ByteString.Lazy      as BS
 import           Data.Monoid
 import           Data.Text
-import           Data.Text.Encoding        (decodeUtf8, encodeUtf8)
+import           Data.Text.Encoding        (encodeUtf8)
 import qualified Data.Text.Lazy            as TL
 import qualified Data.Text.Lazy.Encoding   as TL
 import           Data.Time.Calendar        (fromGregorian)
@@ -37,7 +37,7 @@ register am = do
   salt  <- liftIO newSalt
   let salted = encryptPass' salt (Pass $ encodeUtf8 pw)
   let userfields = UserFields email pw
-  result <- liftIO $ M.registerUser am userfields
+  _ <- liftIO $ M.registerUser am userfields
   status created201
   text $ traceShowId $ TL.decodeUtf8 $ BS.fromStrict $ getEncryptedPass salted
   return ()

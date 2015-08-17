@@ -15,7 +15,6 @@ import qualified Hasql.Postgres                as HP
 import           Layout                        (readCSS)
 import           Lucid
 import           Migrations
-import qualified Modules                       as M
 import           Network.Wai.Middleware.Static (CacheContainer, CachingStrategy (PublicStaticCaching),
                                                 hasPrefix, initCaching,
                                                 staticPolicy')

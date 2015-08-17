@@ -1,7 +1,6 @@
 module Modules where
 
-import           Control.Monad.IO.Class
-import qualified Data.Text              as T
+import qualified Data.Text as T
 import           Models
 
 data RegisterError = RegisterError

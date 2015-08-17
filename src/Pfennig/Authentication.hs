@@ -16,14 +16,14 @@ import qualified Modules             as M
 import           Queries
 
 makeModule :: AppConfig -> M.AuthModule
-makeModule (AppConfig pgsession) = M.Auth {
-    M.registerUser = registerUser pgsession
-  , M.loginUser = loginUser pgsession }
+makeModule (AppConfig session) = M.Auth {
+    M.registerUser = registerUser session
+  , M.loginUser = loginUser session }
 
 registerUser :: PostgresSession -> UserFields
              -> IO (Either T.Text User)
-registerUser pgsession userFields = do
-  newUserRow <- pgsession $ H.tx Nothing $ insertNewUser userFields
+registerUser session userFields = do
+  newUserRow <- session $ H.tx Nothing $ insertNewUser userFields
   return $ extractUser newUserRow
   where extractUser = join . bimap unpackSessionError (justErr "not found")
 
@@ -39,10 +39,10 @@ rowToUser :: (Int, LocalTime, LocalTime, Text, Text) -> User
 rowToUser (i, created, updated, x, y) = User (UserId i) created updated x y
 
 loginUser :: PostgresSession -> UserFields -> IO (Maybe User)
-loginUser pgsession userfields = return $ Just u
-  where u = User uid cat uat log ema
-        uid = UserId 1
-        cat = undefined
-        uat = undefined
-        log = "User"
-        ema = "user@this.me"
+loginUser _ _ = return $ Just u
+  where u = User uid' cat' uat' log' ema'
+        uid' = UserId 1
+        cat' = undefined
+        uat' = undefined
+        log' = "User"
+        ema' = "user@this.me"
