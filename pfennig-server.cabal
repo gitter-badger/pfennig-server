@@ -54,7 +54,8 @@ Test-Suite spec
   main-Is:              Spec.hs
   default-extensions:   GeneralizedNewtypeDeriving
                       , OverloadedStrings
-  build-depends:        base
+  build-depends:        aeson
+                      , base
                       , bytestring
                       , cookie
                       , hspec
@@ -63,5 +64,7 @@ Test-Suite spec
                       , jwt
                       , text
                       , time
+                      , scientific
                       , scotty
+                      , scrypt
                       , transformers
