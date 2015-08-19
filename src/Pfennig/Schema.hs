@@ -11,7 +11,6 @@ createUsers =
      id serial primary key,
      created_at timestamp with time zone not null default now(),
      updated_at timestamp with time zone not null default now(),
-     login text not null,
      email text not null,
      password text not null,
      salt text not null)
