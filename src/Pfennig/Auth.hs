@@ -2,8 +2,6 @@
 module Auth where
 
 import           Control.Monad.IO.Class    (liftIO)
-import           Crypto.Scrypt             (Pass (..), encryptPass',
-                                            getEncryptedPass, newSalt)
 import qualified Data.ByteString.Lazy      as BS
 import           Data.Monoid
 import           Data.Text
@@ -34,12 +32,9 @@ register :: M.AuthModule -> ActionM ()
 register am = do
   email <- param "email" :: ActionM Text
   pw    <- param "pass" :: ActionM Text
-  salt  <- liftIO newSalt
-  let salted = encryptPass' salt (Pass $ encodeUtf8 pw)
   let userfields = UserFields email pw
   _ <- liftIO $ M.registerUser am userfields
   status created201
-  text $ traceShowId $ TL.decodeUtf8 $ BS.fromStrict $ getEncryptedPass salted
   return ()
 
 login :: M.AuthModule -> ActionM ()

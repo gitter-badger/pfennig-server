@@ -33,7 +33,6 @@ executable pfennig-server
                      , safe >=0.3
                      , scientific >=0.3.3
                      , scotty >=0.9
-                     , scrypt
                      , SHA >=1.6
                      , text >=1.2
                      , time >=1.5
@@ -66,5 +65,4 @@ Test-Suite spec
                       , time
                       , scientific
                       , scotty
-                      , scrypt
                       , transformers
